@@ -921,7 +921,7 @@ function renderTasks() {
 
             <div class="empty-state">
 
-                <div>
+                <div class="empty-state-icon">
                     📝
                 </div>
 
@@ -961,6 +961,26 @@ function renderTasks() {
 
                     <div class="task-card ${completed ? "completed" : ""}">
 
+                        <!-- CHECKBOX -->
+
+                        <div class="task-checkbox-container">
+
+                            <input
+                                type="checkbox"
+                                class="task-checkbox"
+                                ${completed ? "checked" : ""}
+                                onchange="toggleTaskCompletion(
+                                    '${task._id}',
+                                    ${completed}
+                                )"
+                                aria-label="Mark task as complete"
+                            >
+
+                        </div>
+
+
+                        <!-- TASK HEADER -->
+
                         <div class="task-card-header">
 
                             <div>
@@ -992,6 +1012,8 @@ function renderTasks() {
                         </div>
 
 
+                        <!-- TASK META -->
+
                         <div class="task-meta">
 
                             <span>
@@ -1020,6 +1042,8 @@ function renderTasks() {
 
                         </div>
 
+
+                        <!-- TASK ACTIONS -->
 
                         <div class="task-actions">
 
