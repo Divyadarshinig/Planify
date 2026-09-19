@@ -2,7 +2,7 @@
 // PLANIFY - FRONTEND SCRIPT
 // =========================================================
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://planify-bwxy.onrender.com/api";
 
 // =========================================================
 // ELEMENTS
