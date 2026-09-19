@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Planify - Dashboard</title>
+
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="images/planify.jpg"
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+<div class="dashboard-container">
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-top">
+
+            <!-- LOGO -->
+
+            <div class="sidebar-logo">
+
+                <div class="logo-icon">
+                    <img
+                        src="images/planify.jpg"
+                        alt="Planify Logo"
+                    >
+                </div>
+
+                <div>
+                    <h2>Planify</h2>
+                    <span>Plan. Focus. Grow.</span>
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav
+                class="sidebar-nav"
+                aria-label="Dashboard navigation"
+            >
+
+                <a
+                    href="#dashboard"
+                    class="nav-item active"
+                    data-section="dashboard"
+                >
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="#focusSection"
+                    class="nav-item"
+                    data-section="focusSection"
+                >
+                    <i class="fa-solid fa-moon"></i>
+                    <span>Focus</span>
+                </a>
+
+
+                <a
+                    href="#tasks"
+                    class="nav-item"
+                    data-section="tasks"
+                >
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>My Tasks</span>
+                </a>
+
+
+                <a
+                    href="#productivityAnalysis"
+                    class="nav-item"
+                    data-section="productivityAnalysis"
+                >
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Productivity</span>
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- SIDEBAR BOTTOM -->
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="sidebar-user-info">
+
+                    <strong id="userName">
+                        User
+                    </strong>
+
+                    <span>
+                        Planify Member
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =================================================
+         MAIN CONTENT
+    ================================================= -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <header class="dashboard-header">
+
+            <div class="welcome-section">
+
+                <span class="welcome-label">
+                    YOUR PRODUCTIVITY SPACE
+                </span>
+
+                <h1>
+                    Welcome back, 🌙
+                </h1>
+
+                <p id="currentDate">
+                    Today
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="addTaskButton"
+                class="add-task-button"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Add Task
+            </button>
+
+        </header>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================= -->
+
+        <section
+            class="stats-grid"
+            id="dashboard"
+        >
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Total Tasks</span>
+                    <h2 id="totalTasks">0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Pending</span>
+                    <h2 id="pendingTasks">0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>In Progress</span>
+                    <h2 id="progressTasks">0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="stat-info">
+                    <span>Completed</span>
+                    <h2 id="completedTasks">0</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FOCUS OF THE DAY
+        ================================================= -->
+
+        <section
+            class="focus-section"
+            id="focusSection"
+        >
+
+            <div class="focus-header">
+
+                <div>
+
+                    <span class="section-label">
+                        TODAY'S PRIORITY
+                    </span>
+
+                    <h2>
+                        🌙 Focus of the Day
+                    </h2>
+
+                </div>
+
+                <span class="focus-date">
+                    One task. One focus.
+                </span>
+
+            </div>
+
+
+            <div
+                id="focusTaskContainer"
+                class="focus-task-container"
+            >
+
+                <div class="focus-empty">
+
+                    <div class="focus-empty-icon">
+                        🌙
+                    </div>
+
+                    <div>
+                        <h3>Choose your focus</h3>
+
+                        <p>
+                            Select one task below as your
+                            main priority for today.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             TASK FORM
+        ================================================= -->
+
+        <section
+            class="task-form-section"
+            id="taskFormContainer"
+            style="display:none;"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        PLAN YOUR WORK
+                    </span>
+
+                    <h2 id="taskFormHeading">
+                        Create a New Task
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="taskForm"
+                class="task-form"
+            >
+
+                <!-- TITLE -->
+
+                <div class="form-field">
+
+                    <label for="taskTitle">
+                        Task Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="taskTitle"
+                        placeholder="What do you need to accomplish?"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-field">
+
+                    <label for="taskDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="taskDescription"
+                        rows="4"
+                        placeholder="Add some details about your task..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-field">
+
+                    <label for="taskStatus">
+                        Status
+                    </label>
+
+                    <select id="taskStatus">
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="in-progress">
+                            In Progress
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PRIORITY -->
+
+                <div class="form-field">
+
+                    <label for="taskPriority">
+                        Priority
+                    </label>
+
+                    <select id="taskPriority">
+
+                        <option value="low">
+                            Low Priority
+                        </option>
+
+                        <option
+                            value="medium"
+                            selected
+                        >
+                            Medium Priority
+                        </option>
+
+                        <option value="high">
+                            High Priority
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ENERGY -->
+
+                <div class="form-field">
+
+                    <label for="taskEnergy">
+                        ⚡ Energy Level
+                    </label>
+
+                    <select id="taskEnergy">
+
+                        <option value="low">
+                            🟢 Low Energy
+                        </option>
+
+                        <option
+                            value="medium"
+                            selected
+                        >
+                            🟡 Medium Energy
+                        </option>
+
+                        <option value="high">
+                            🔴 High Energy
+                        </option>
+
+                    </select>
+
+                    <small>
+                        How much mental energy will this task require?
+                    </small>
+
+                </div>
+
+
+                <!-- DUE DATE -->
+
+                <div class="form-field">
+
+                    <label for="taskDueDate">
+                        📅 Due Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="taskDueDate"
+                    >
+
+                    <small>
+                        Choose when this task should be completed.
+                    </small>
+
+                </div>
+
+
+                <!-- REMINDER -->
+
+                <div class="form-field">
+
+                    <label for="taskReminder">
+                        🔔 Set Reminder
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="taskReminder"
+                    >
+
+                    <small>
+                        Choose a date and time for your reminder.
+                    </small>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="task-form-buttons">
+
+                    <button
+                        type="submit"
+                        id="taskSubmitButton"
+                        class="save-task-button"
+                    >
+                        Create Task
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="cancelTaskButton"
+                        class="cancel-task-button"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+
+        <!-- =================================================
+             TASKS
+        ================================================= -->
+
+        <section
+            class="tasks-section"
+            id="tasks"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        YOUR TASKS
+                    </span>
+
+                    <h2>
+                        My Tasks
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="taskList"
+                class="task-list"
+            >
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+                        🌙
+                    </div>
+
+                    <h3>
+                        No tasks yet
+                    </h3>
+
+                    <p>
+                        Create your first task and
+                        start planning your day.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PRODUCTIVITY ANALYSIS
+        ================================================= -->
+
+        <section
+            class="productivity-analysis-section"
+            id="productivityAnalysis"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        YOUR PROGRESS
+                    </span>
+
+                    <h2>
+                        📊 Productivity Analysis
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="productivity-stats-grid">
+
+
+                <div class="productivity-stat-card">
+
+                    <div class="productivity-stat-icon">
+                        📈
+                    </div>
+
+                    <div>
+                        <span>
+                            Completion Rate
+                        </span>
+
+                        <h3 id="completionPercentage">
+                            0%
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="productivity-stat-card">
+
+                    <div class="productivity-stat-icon">
+                        ✅
+                    </div>
+
+                    <div>
+                        <span>
+                            Completed Today
+                        </span>
+
+                        <h3 id="completedToday">
+                            0
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="productivity-stat-card">
+
+                    <div class="productivity-stat-icon">
+                        📅
+                    </div>
+
+                    <div>
+                        <span>
+                            This Week
+                        </span>
+
+                        <h3 id="completedThisWeek">
+                            0
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="productivity-stat-card streak-card">
+
+                    <div class="productivity-stat-icon">
+                        🔥
+                    </div>
+
+                    <div>
+                        <span>
+                            Current Streak
+                        </span>
+
+                        <h3 id="currentStreak">
+                            0 days
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="productivity-stat-card streak-card">
+
+                    <div class="productivity-stat-icon">
+                        🏆
+                    </div>
+
+                    <div>
+                        <span>
+                            Longest Streak
+                        </span>
+
+                        <h3 id="longestStreak">
+                            0 days
+                        </h3>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCTIVITY MESSAGE -->
+
+            <div class="productivity-insight">
+
+                <div class="productivity-insight-icon">
+                    🌱
+                </div>
+
+                <div>
+
+                    <span>
+                        YOUR PRODUCTIVITY INSIGHT
+                    </span>
+
+                    <p id="productivityMessage">
+                        Start by creating your first task.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FINAL MESSAGE
+        ================================================= -->
+
+        <section class="productivity-card">
+
+            <div class="productivity-icon">
+                🌱
+            </div>
+
+            <div>
+
+                <span>
+                    A LITTLE REMINDER
+                </span>
+
+                <h3>
+                    Progress is better than perfection.
+                </h3>
+
+                <p>
+                    Focus on one task at a time
+                    and keep moving forward.
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
