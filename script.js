@@ -4,33 +4,72 @@
 
 const API_URL = "https://planify-bwxy.onrender.com/api";
 
+
 // =========================================================
 // ELEMENTS
 // =========================================================
 
-const taskForm = document.getElementById("taskForm");
-const taskFormContainer = document.getElementById("taskFormContainer");
-const addTaskButton = document.getElementById("addTaskButton");
-const cancelTaskButton = document.getElementById("cancelTaskButton");
+const taskForm =
+    document.getElementById("taskForm");
 
-const taskList = document.getElementById("taskList");
-const logoutButton = document.getElementById("logoutButton");
+const taskFormContainer =
+    document.getElementById("taskFormContainer");
 
-const taskTitle = document.getElementById("taskTitle");
-const taskDescription = document.getElementById("taskDescription");
-const taskStatus = document.getElementById("taskStatus");
-const taskPriority = document.getElementById("taskPriority");
-const taskEnergy = document.getElementById("taskEnergy");
-const taskReminder = document.getElementById("taskReminder");
-const taskSubmitButton = document.getElementById("taskSubmitButton");
+const addTaskButton =
+    document.getElementById("addTaskButton");
 
-const userName = document.getElementById("userName");
-const currentDate = document.getElementById("currentDate");
+const cancelTaskButton =
+    document.getElementById("cancelTaskButton");
 
-const totalTasksElement = document.getElementById("totalTasks");
-const pendingTasksElement = document.getElementById("pendingTasks");
-const progressTasksElement = document.getElementById("progressTasks");
-const completedTasksElement = document.getElementById("completedTasks");
+const taskList =
+    document.getElementById("taskList");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const taskTitle =
+    document.getElementById("taskTitle");
+
+const taskDescription =
+    document.getElementById("taskDescription");
+
+const taskStatus =
+    document.getElementById("taskStatus");
+
+const taskPriority =
+    document.getElementById("taskPriority");
+
+const taskEnergy =
+    document.getElementById("taskEnergy");
+
+const taskReminder =
+    document.getElementById("taskReminder");
+
+const taskSubmitButton =
+    document.getElementById("taskSubmitButton");
+
+const userName =
+    document.getElementById("userName");
+
+const currentDate =
+    document.getElementById("currentDate");
+
+const totalTasksElement =
+    document.getElementById("totalTasks");
+
+const pendingTasksElement =
+    document.getElementById("pendingTasks");
+
+const progressTasksElement =
+    document.getElementById("progressTasks");
+
+const completedTasksElement =
+    document.getElementById("completedTasks");
+
+
+// =========================================================
+// PRODUCTIVITY ELEMENTS
+// =========================================================
 
 const completionPercentageElement =
     document.getElementById("completionPercentage");
@@ -53,882 +92,1263 @@ const productivityMessageElement =
 const focusTaskContainer =
     document.getElementById("focusTaskContainer");
 
+
+// =========================================================
+// LOGIN / REGISTER
+// =========================================================
+
 const loginForm =
     document.getElementById("loginForm");
 
 const registerForm =
     document.getElementById("registerForm");
 
+const showRegister =
+    document.getElementById("showRegister");
+
+const showLogin =
+    document.getElementById("showLogin");
+
+const loginSection =
+    document.getElementById("loginSection");
+
+const registerSection =
+    document.getElementById("registerSection");
+
+
+// =========================================================
+// LOGIN / REGISTER SWITCH
+// =========================================================
+
+if (showRegister) {
+
+    showRegister.addEventListener("click", function (event) {
+
+        event.preventDefault();
+
+        if (loginSection) {
+            loginSection.style.display = "none";
+        }
+
+        if (registerSection) {
+            registerSection.style.display = "block";
+        }
+
+    });
+
+}
+
+
+if (showLogin) {
+
+    showLogin.addEventListener("click", function (event) {
+
+        event.preventDefault();
+
+        if (registerSection) {
+            registerSection.style.display = "none";
+        }
+
+        if (loginSection) {
+            loginSection.style.display = "block";
+        }
+
+    });
+
+}
+
+
 // =========================================================
 // GLOBAL VARIABLES
 // =========================================================
 
 let currentTasks = [];
+
 let editingTaskId = null;
 
 const reminderTimers = new Map();
 
-const token = localStorage.getItem("token");
+
+// =========================================================
+// TOKEN
+// =========================================================
+
+const token =
+    localStorage.getItem("token");
+
 
 // =========================================================
 // CHECK LOGIN
 // =========================================================
 
 if (taskList && !token) {
+
     window.location.href = "index.html";
+
 }
+
 
 // =========================================================
 // DISPLAY USER
 // =========================================================
 
 if (userName) {
-    const storedUser = localStorage.getItem("user");
+
+    const storedUser =
+        localStorage.getItem("user");
 
     if (storedUser) {
+
         try {
-            const user = JSON.parse(storedUser);
-            userName.textContent = user.name || "User";
+
+            const user =
+                JSON.parse(storedUser);
+
+            userName.textContent =
+                user.name || "User";
+
         } catch (error) {
-            console.error("Unable to read stored user:", error);
+
+            console.error(
+                "Unable to read user:",
+                error
+            );
+
         }
+
     }
+
 }
+
 
 // =========================================================
 // CURRENT DATE
 // =========================================================
 
 if (currentDate) {
-    const today = new Date();
 
-    currentDate.textContent = today.toLocaleDateString("en-IN", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
+    const today =
+        new Date();
+
+    currentDate.textContent =
+        today.toLocaleDateString(
+            "en-IN",
+            {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        );
+
 }
+
 
 // =========================================================
 // LOGIN
 // =========================================================
 
 if (loginForm) {
-    loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
 
-        /*
-         * Supports both:
-         * id="email" / id="password"
-         * and
-         * id="loginEmail" / id="loginPassword"
-         */
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        const emailInput =
-            document.getElementById("loginEmail") ||
-            document.getElementById("email");
+            event.preventDefault();
 
-        const passwordInput =
-            document.getElementById("loginPassword") ||
-            document.getElementById("password");
+            const emailInput =
+                document.getElementById("loginEmail") ||
+                document.getElementById("email");
 
-        if (!emailInput || !passwordInput) {
-            alert("Login fields could not be found.");
-            return;
-        }
+            const passwordInput =
+                document.getElementById("loginPassword") ||
+                document.getElementById("password");
 
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
+            if (!emailInput || !passwordInput) {
 
-        if (!email || !password) {
-            alert("Please enter your email and password.");
-            return;
-        }
+                alert(
+                    "Login fields could not be found."
+                );
 
-        try {
-            const response = await fetch(
-                `${API_URL}/auth/login`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                alert(data.message || "Login failed.");
                 return;
             }
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem(
-                "user",
-                JSON.stringify(data.user)
-            );
+            const email =
+                emailInput.value.trim();
 
-            window.location.href = "dashboard.html";
+            const password =
+                passwordInput.value;
 
-        } catch (error) {
-            console.error("Login error:", error);
+            if (!email || !password) {
 
-            alert(
-                "Unable to connect to Planify server. " +
-                "Make sure the backend is running."
-            );
+                alert(
+                    "Please enter your email and password."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/auth/login`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                email: email,
+                                password: password
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        "Login failed."
+                    );
+
+                    return;
+                }
+
+
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(data.user)
+                );
+
+
+                window.location.href =
+                    "dashboard.html";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+                alert(
+                    "Unable to connect to Planify server."
+                );
+
+            }
+
         }
-    });
+    );
+
 }
+
 
 // =========================================================
 // REGISTER
 // =========================================================
 
 if (registerForm) {
-    registerForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
 
-        const nameInput =
-            document.getElementById("registerName");
+    registerForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        const emailInput =
-            document.getElementById("registerEmail");
+            event.preventDefault();
 
-        const passwordInput =
-            document.getElementById("registerPassword");
 
-        if (!nameInput || !emailInput || !passwordInput) {
-            alert("Registration fields could not be found.");
-            return;
-        }
-
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!name || !email || !password) {
-            alert("Please fill in all registration fields.");
-            return;
-        }
-
-        try {
-            const response = await fetch(
-                `${API_URL}/auth/register`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        password
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                alert(
-                    data.message ||
-                    "Registration failed."
+            const nameInput =
+                document.getElementById(
+                    "registerName"
                 );
+
+            const emailInput =
+                document.getElementById(
+                    "registerEmail"
+                );
+
+            const passwordInput =
+                document.getElementById(
+                    "registerPassword"
+                );
+
+            const confirmPasswordInput =
+                document.getElementById(
+                    "confirmPassword"
+                );
+
+
+            if (
+                !nameInput ||
+                !emailInput ||
+                !passwordInput
+            ) {
+
+                alert(
+                    "Registration fields could not be found."
+                );
+
                 return;
             }
 
-            alert(
-                "Registration successful! Please login."
-            );
 
-            window.location.href = "index.html";
+            const name =
+                nameInput.value.trim();
 
-        } catch (error) {
-            console.error("Registration error:", error);
+            const email =
+                emailInput.value.trim();
 
-            alert(
-                "Unable to connect to Planify server."
-            );
+            const password =
+                passwordInput.value;
+
+            const confirmPassword =
+                confirmPasswordInput
+                    ? confirmPasswordInput.value
+                    : password;
+
+
+            if (!name || !email || !password) {
+
+                alert(
+                    "Please fill in all required fields."
+                );
+
+                return;
+            }
+
+
+            if (password !== confirmPassword) {
+
+                alert(
+                    "Passwords do not match."
+                );
+
+                return;
+            }
+
+
+            if (password.length < 6) {
+
+                alert(
+                    "Password must contain at least 6 characters."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/auth/register`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                name: name,
+                                email: email,
+                                password: password
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        "Registration failed."
+                    );
+
+                    return;
+                }
+
+
+                alert(
+                    "Registration successful! Please login."
+                );
+
+
+                registerForm.reset();
+
+
+                if (registerSection) {
+                    registerSection.style.display =
+                        "none";
+                }
+
+
+                if (loginSection) {
+                    loginSection.style.display =
+                        "block";
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Registration error:",
+                    error
+                );
+
+                alert(
+                    "Unable to connect to Planify server."
+                );
+
+            }
+
         }
-    });
+    );
+
 }
+
 
 // =========================================================
 // LOGOUT
 // =========================================================
 
 if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-        clearReminderTimers();
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+    logoutButton.addEventListener(
+        "click",
+        function () {
 
-        window.location.href = "index.html";
-    });
+            localStorage.removeItem("token");
+
+            localStorage.removeItem("user");
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
 }
 
+
 // =========================================================
-// ADD TASK
+// ADD TASK BUTTON
 // =========================================================
 
 if (addTaskButton) {
-    addTaskButton.addEventListener("click", () => {
-        editingTaskId = null;
 
-        taskForm.reset();
+    addTaskButton.addEventListener(
+        "click",
+        function () {
 
-        taskStatus.value = "pending";
-        taskPriority.value = "medium";
-        taskEnergy.value = "medium";
+            editingTaskId = null;
 
-        taskSubmitButton.textContent = "Create Task";
+            if (taskForm) {
+                taskForm.reset();
+            }
 
-        taskFormContainer.style.display = "block";
+            if (taskSubmitButton) {
 
-        taskFormContainer.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    });
+                taskSubmitButton.textContent =
+                    "Add Task";
+
+            }
+
+            if (taskFormContainer) {
+
+                taskFormContainer.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
 }
+
 
 // =========================================================
 // CANCEL TASK
 // =========================================================
 
 if (cancelTaskButton) {
-    cancelTaskButton.addEventListener("click", () => {
-        editingTaskId = null;
 
-        taskForm.reset();
-
-        taskStatus.value = "pending";
-        taskPriority.value = "medium";
-        taskEnergy.value = "medium";
-
-        taskSubmitButton.textContent = "Create Task";
-
-        taskFormContainer.style.display = "none";
-    });
-}
-
-// =========================================================
-// CREATE / UPDATE TASK
-// =========================================================
-
-if (taskForm) {
-    taskForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const title = taskTitle.value.trim();
-        const description = taskDescription.value.trim();
-        const status = taskStatus.value;
-        const priority = taskPriority.value;
-        const energyLevel = taskEnergy.value || "medium";
-
-        let reminderValue = null;
-
-        if (taskReminder.value) {
-            const reminderDate =
-                new Date(taskReminder.value);
-
-            if (isNaN(reminderDate.getTime())) {
-                alert("Please select a valid reminder date and time.");
-                return;
-            }
-
-            reminderValue =
-                reminderDate.toISOString();
-        }
-
-        if (!title) {
-            alert("Please enter a task title.");
-            return;
-        }
-
-        const wasEditing = Boolean(editingTaskId);
-
-        const taskData = {
-            title,
-            description,
-            status,
-            priority,
-            energyLevel,
-            reminder: reminderValue
-        };
-
-        try {
-            let response;
-
-            if (editingTaskId) {
-                response = await fetch(
-                    `${API_URL}/tasks/${editingTaskId}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify(taskData)
-                    }
-                );
-            } else {
-                response = await fetch(
-                    `${API_URL}/tasks`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify(taskData)
-                    }
-                );
-            }
-
-            const data = await response.json();
-
-            if (response.status === 401) {
-                handleUnauthorized();
-                return;
-            }
-
-            if (!response.ok) {
-                alert(
-                    data.message ||
-                    "Unable to save task."
-                );
-                return;
-            }
-
-            // =================================================
-            // REQUEST BROWSER NOTIFICATION PERMISSION
-            // =================================================
-
-            if (reminderValue) {
-                await requestNotificationPermission();
-            }
+    cancelTaskButton.addEventListener(
+        "click",
+        function () {
 
             editingTaskId = null;
 
-            taskForm.reset();
+            if (taskForm) {
+                taskForm.reset();
+            }
 
-            taskStatus.value = "pending";
-            taskPriority.value = "medium";
-            taskEnergy.value = "medium";
+            if (taskFormContainer) {
 
-            taskSubmitButton.textContent = "Create Task";
+                taskFormContainer.style.display =
+                    "none";
 
-            taskFormContainer.style.display = "none";
+            }
 
-            await loadTasks();
-
-            alert(
-                wasEditing
-                    ? "Task updated successfully!"
-                    : "Task created successfully!"
-            );
-
-        } catch (error) {
-            console.error("Task save error:", error);
-
-            alert(
-                "Unable to connect to Planify server."
-            );
         }
-    });
+    );
+
 }
+
 
 // =========================================================
 // LOAD TASKS
 // =========================================================
 
 async function loadTasks() {
-    if (!token || !taskList) {
+
+    if (!taskList || !token) {
         return;
     }
 
+
     try {
-        const response = await fetch(
-            `${API_URL}/tasks`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
+
+        const response =
+            await fetch(
+                `${API_URL}/tasks`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
                 }
-            }
-        );
+            );
+
 
         if (response.status === 401) {
-            handleUnauthorized();
+
+            localStorage.removeItem("token");
+
+            localStorage.removeItem("user");
+
+            window.location.href =
+                "index.html";
+
             return;
         }
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
+
             alert(
                 data.message ||
                 "Unable to load tasks."
             );
+
             return;
         }
 
-        currentTasks = data.tasks || [];
 
-        displayTasks(currentTasks);
-        updateStatistics(currentTasks);
-        displayFocusTask();
+        currentTasks =
+            Array.isArray(data)
+                ? data
+                : data.tasks || [];
 
-        scheduleAllReminders();
 
-        await loadProductivityStats();
+        renderTasks();
+
+        updateStatistics();
+
+        updateFocusTask();
+
+        setupReminders();
+
 
     } catch (error) {
+
         console.error(
-            "Error loading tasks:",
+            "Load tasks error:",
             error
         );
+
+        alert(
+            "Unable to connect to Planify server."
+        );
+
     }
+
 }
 
+
 // =========================================================
-// PRODUCTIVITY ANALYSIS
+// CREATE / UPDATE TASK
 // =========================================================
 
-async function loadProductivityStats() {
-    if (!token) {
-        return;
-    }
+if (taskForm) {
 
-    try {
-        const response = await fetch(
-            `${API_URL}/productivity`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+    taskForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            if (!token) {
+
+                window.location.href =
+                    "index.html";
+
+                return;
             }
-        );
 
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
+
+            const title =
+                taskTitle
+                    ? taskTitle.value.trim()
+                    : "";
+
+
+            const description =
+                taskDescription
+                    ? taskDescription.value.trim()
+                    : "";
+
+
+            const status =
+                taskStatus
+                    ? taskStatus.value
+                    : "pending";
+
+
+            const priority =
+                taskPriority
+                    ? taskPriority.value
+                    : "medium";
+
+
+            const energyLevel =
+                taskEnergy
+                    ? taskEnergy.value
+                    : "medium";
+
+
+            const reminder =
+                taskReminder
+                    ? taskReminder.value
+                    : "";
+
+
+            if (!title) {
+
+                alert(
+                    "Please enter a task title."
+                );
+
+                return;
+            }
+
+
+            const taskData = {
+
+                title: title,
+
+                description: description,
+
+                status: status,
+
+                priority: priority,
+
+                energyLevel: energyLevel,
+
+                reminder:
+                    reminder
+                        ? new Date(reminder).toISOString()
+                        : null
+
+            };
+
+
+            try {
+
+                let response;
+
+
+                if (editingTaskId) {
+
+                    response =
+                        await fetch(
+                            `${API_URL}/tasks/${editingTaskId}`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        taskData
+                                    )
+                            }
+                        );
+
+                } else {
+
+                    response =
+                        await fetch(
+                            `${API_URL}/tasks`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Authorization":
+                                        `Bearer ${token}`
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        taskData
+                                    )
+                            }
+                        );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        "Unable to save task."
+                    );
+
+                    return;
+                }
+
+
+                editingTaskId = null;
+
+
+                taskForm.reset();
+
+
+                if (taskFormContainer) {
+
+                    taskFormContainer.style.display =
+                        "none";
+
+                }
+
+
+                if (taskSubmitButton) {
+
+                    taskSubmitButton.textContent =
+                        "Add Task";
+
+                }
+
+
+                await loadTasks();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Save task error:",
+                    error
+                );
+
+                alert(
+                    "Unable to connect to Planify server."
+                );
+
+            }
+
         }
+    );
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error(
-                "Productivity API error:",
-                data.message
-            );
-            return;
-        }
-
-        if (completionPercentageElement) {
-            completionPercentageElement.textContent =
-                `${data.completionPercentage || 0}%`;
-        }
-
-        if (completedTodayElement) {
-            completedTodayElement.textContent =
-                data.completedToday || 0;
-        }
-
-        if (completedThisWeekElement) {
-            completedThisWeekElement.textContent =
-                data.completedThisWeek || 0;
-        }
-
-        if (currentStreakElement) {
-            const streak =
-                data.currentStreak || 0;
-
-            currentStreakElement.textContent =
-                `${streak} ${streak === 1 ? "day" : "days"}`;
-        }
-
-        if (longestStreakElement) {
-            const streak =
-                data.longestStreak || 0;
-
-            longestStreakElement.textContent =
-                `${streak} ${streak === 1 ? "day" : "days"}`;
-        }
-
-        if (productivityMessageElement) {
-            productivityMessageElement.textContent =
-                data.productivityMessage ||
-                "Keep moving forward.";
-        }
-
-    } catch (error) {
-        console.error(
-            "Error loading productivity statistics:",
-            error
-        );
-    }
 }
 
+
 // =========================================================
-// DISPLAY TASKS
+// RENDER TASKS
 // =========================================================
 
-function displayTasks(tasks) {
+function renderTasks() {
+
     if (!taskList) {
         return;
     }
 
-    if (tasks.length === 0) {
+
+    if (!currentTasks.length) {
+
         taskList.innerHTML = `
+
             <div class="empty-state">
-                <div class="empty-state-icon">
-                    🌙
-                </div>
-
-                <h3>No tasks yet</h3>
-
-                <p>
-                    Create your first task and
-                    start planning your day.
-                </p>
-            </div>
-        `;
-
-        return;
-    }
-
-    taskList.innerHTML = tasks.map(task => {
-
-        const isCompleted =
-            task.status === "completed";
-
-        const isFocus =
-            task.isFocus === true;
-
-        const energy =
-            task.energyLevel || "medium";
-
-        const energyHTML = `
-            <span class="energy-badge energy-${energy}">
-                <span class="energy-icon">
-                    ${getEnergyIcon(energy)}
-                </span>
-
-                <span>
-                    ${formatEnergy(energy)}
-                </span>
-            </span>
-        `;
-
-        const reminderHTML = task.reminder
-            ? `
-                <div class="task-reminder">
-                    <span class="reminder-icon">
-                        🔔
-                    </span>
-
-                    <span>
-                        ${formatReminder(task.reminder)}
-                    </span>
-                </div>
-            `
-            : "";
-
-        const dueDateHTML = task.dueDate
-            ? `
-                <span>
-                    <i class="fa-regular fa-calendar"></i>
-                    ${formatDate(task.dueDate)}
-                </span>
-            `
-            : "";
-
-        return `
-            <div
-                class="
-                    task-card
-                    ${isCompleted ? "completed-task" : ""}
-                    ${isFocus ? "is-focus" : ""}
-                "
-                data-task-id="${task._id}"
-            >
-
-                <!-- CHECKBOX -->
-
-                <div class="task-checkbox-container">
-
-                    <input
-                        type="checkbox"
-                        class="task-checkbox"
-                        ${isCompleted ? "checked" : ""}
-                        onchange="
-                            toggleTaskCompletion(
-                                '${task._id}',
-                                this.checked
-                            )
-                        "
-                    >
-
-                </div>
-
-
-                <!-- TASK CONTENT -->
-
-                <div class="task-content">
-
-                    <div class="task-header">
-
-                        <h3>
-                            ${escapeHTML(task.title)}
-                        </h3>
-
-                        <span
-                            class="
-                                priority-badge
-                                ${task.priority || "medium"}
-                            "
-                        >
-                            ${formatPriority(task.priority)}
-                        </span>
-
-                    </div>
-
-
-                    ${
-                        task.description
-                            ? `
-                                <p>
-                                    ${escapeHTML(
-                                        task.description
-                                    )}
-                                </p>
-                            `
-                            : ""
-                    }
-
-
-                    <div class="task-meta">
-
-                        <span class="status-item">
-
-                            <i class="fa-solid fa-spinner"></i>
-
-                            ${formatStatus(task.status)}
-
-                        </span>
-
-                        ${dueDateHTML}
-
-                        ${energyHTML}
-
-                    </div>
-
-                    ${reminderHTML}
-
-                </div>
-
-
-                <!-- TASK ACTIONS -->
-
-                <div class="task-actions">
-
-                    <button
-                        type="button"
-                        class="
-                            focus-task-button
-                            ${isFocus ? "active" : ""}
-                        "
-                        onclick="
-                            ${
-                                isFocus
-                                    ? `removeFocus('${task._id}')`
-                                    : `setFocus('${task._id}')`
-                            }
-                        "
-                        title="${
-                            isFocus
-                                ? "Remove focus"
-                                : "Set as focus"
-                        }"
-                    >
-                        <span class="focus-button-icon">
-                            🌙
-                        </span>
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="edit-task-button"
-                        onclick="
-                            editTask('${task._id}')
-                        "
-                        title="Edit task"
-                    >
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="delete-task-button"
-                        onclick="
-                            deleteTask('${task._id}')
-                        "
-                        title="Delete task"
-                    >
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-
-                </div>
-
-            </div>
-        `;
-
-    }).join("");
-}
-
-// =========================================================
-// UPDATE STATISTICS
-// =========================================================
-
-function updateStatistics(tasks) {
-
-    const total =
-        tasks.length;
-
-    const pending =
-        tasks.filter(
-            task => task.status === "pending"
-        ).length;
-
-    const inProgress =
-        tasks.filter(
-            task => task.status === "in-progress"
-        ).length;
-
-    const completed =
-        tasks.filter(
-            task => task.status === "completed"
-        ).length;
-
-    if (totalTasksElement) {
-        totalTasksElement.textContent = total;
-    }
-
-    if (pendingTasksElement) {
-        pendingTasksElement.textContent = pending;
-    }
-
-    if (progressTasksElement) {
-        progressTasksElement.textContent = inProgress;
-    }
-
-    if (completedTasksElement) {
-        completedTasksElement.textContent = completed;
-    }
-}
-
-// =========================================================
-// FOCUS OF THE DAY
-// =========================================================
-
-function displayFocusTask() {
-
-    if (!focusTaskContainer) {
-        return;
-    }
-
-    const focusTask =
-        currentTasks.find(
-            task =>
-                task.isFocus === true &&
-                task.status !== "completed"
-        );
-
-    if (!focusTask) {
-
-        focusTaskContainer.innerHTML = `
-            <div class="focus-empty">
-
-                <div class="focus-empty-icon">
-                    🌙
-                </div>
 
                 <div>
-
-                    <h3>
-                        Choose your focus
-                    </h3>
-
-                    <p>
-                        Select one task below as your
-                        main priority for today.
-                    </p>
-
+                    📝
                 </div>
 
+                <h3>
+                    No tasks yet
+                </h3>
+
+                <p>
+                    Create your first task and start planning your day.
+                </p>
+
             </div>
+
         `;
 
         return;
     }
 
-    focusTaskContainer.innerHTML = `
-        <div class="focus-task">
 
-            <div class="focus-task-icon">
-                🌙
-            </div>
+    taskList.innerHTML =
+        currentTasks
+            .map(function (task) {
 
-            <div class="focus-task-content">
+                const completed =
+                    task.status === "completed";
 
-                <span class="focus-task-label">
-                    TODAY'S FOCUS
-                </span>
 
-                <h3 class="focus-task-title">
-                    ${escapeHTML(focusTask.title)}
-                </h3>
+                const reminderText =
+                    task.reminder
+                        ? formatDateTime(
+                            task.reminder
+                        )
+                        : "";
 
-                ${
-                    focusTask.description
-                        ? `
-                            <p class="focus-task-description">
-                                ${escapeHTML(
-                                    focusTask.description
+
+                return `
+
+                    <div class="task-card ${completed ? "completed" : ""}">
+
+                        <div class="task-card-header">
+
+                            <div>
+
+                                <h3>
+                                    ${escapeHtml(
+                                        task.title || ""
+                                    )}
+                                </h3>
+
+                                <p>
+                                    ${escapeHtml(
+                                        task.description || ""
+                                    )}
+                                </p>
+
+                            </div>
+
+                            <span class="task-priority ${escapeHtml(
+                                task.priority || "medium"
+                            )}">
+
+                                ${escapeHtml(
+                                    task.priority || "medium"
                                 )}
-                            </p>
-                        `
-                        : ""
-                }
 
-            </div>
+                            </span>
 
-            <button
-                type="button"
-                class="remove-focus-button"
-                onclick="
-                    removeFocus('${focusTask._id}')
-                "
-            >
-                Remove Focus
-            </button>
+                        </div>
 
-        </div>
-    `;
+
+                        <div class="task-meta">
+
+                            <span>
+                                ⚡
+                                ${escapeHtml(
+                                    task.energyLevel || "medium"
+                                )}
+                            </span>
+
+                            <span>
+                                📌
+                                ${escapeHtml(
+                                    task.status || "pending"
+                                )}
+                            </span>
+
+                            ${
+                                reminderText
+                                    ? `
+                                        <span>
+                                            ⏰ ${reminderText}
+                                        </span>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+                            <button
+                                type="button"
+                                onclick="toggleTaskCompletion(
+                                    '${task._id}',
+                                    ${completed}
+                                )"
+                            >
+                                ${
+                                    completed
+                                        ? "↩ Mark Pending"
+                                        : "✓ Complete"
+                                }
+                            </button>
+
+
+                            <button
+                                type="button"
+                                onclick="editTask(
+                                    '${task._id}'
+                                )"
+                            >
+                                ✏ Edit
+                            </button>
+
+
+                            <button
+                                type="button"
+                                onclick="deleteTask(
+                                    '${task._id}'
+                                )"
+                            >
+                                🗑 Delete
+                            </button>
+
+
+                            ${
+                                task.isFocus
+                                    ? `
+                                        <button
+                                            type="button"
+                                            onclick="removeFocus(
+                                                '${task._id}'
+                                            )"
+                                        >
+                                            ⭐ Remove Focus
+                                        </button>
+                                      `
+                                    : `
+                                        <button
+                                            type="button"
+                                            onclick="setFocus(
+                                                '${task._id}'
+                                            )"
+                                        >
+                                            ☆ Set Focus
+                                        </button>
+                                      `
+                            }
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
 }
+
+
+// =========================================================
+// EDIT TASK
+// =========================================================
+
+function editTask(taskId) {
+
+    const task =
+        currentTasks.find(
+            function (item) {
+
+                return item._id === taskId;
+
+            }
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    editingTaskId =
+        taskId;
+
+
+    if (taskTitle) {
+
+        taskTitle.value =
+            task.title || "";
+
+    }
+
+
+    if (taskDescription) {
+
+        taskDescription.value =
+            task.description || "";
+
+    }
+
+
+    if (taskStatus) {
+
+        taskStatus.value =
+            task.status || "pending";
+
+    }
+
+
+    if (taskPriority) {
+
+        taskPriority.value =
+            task.priority || "medium";
+
+    }
+
+
+    if (taskEnergy) {
+
+        taskEnergy.value =
+            task.energyLevel || "medium";
+
+    }
+
+
+    if (taskReminder) {
+
+        if (task.reminder) {
+
+            const date =
+                new Date(task.reminder);
+
+            const localDate =
+                new Date(
+                    date.getTime() -
+                    date.getTimezoneOffset() * 60000
+                );
+
+            taskReminder.value =
+                localDate
+                    .toISOString()
+                    .slice(0, 16);
+
+        } else {
+
+            taskReminder.value = "";
+
+        }
+
+    }
+
+
+    if (taskSubmitButton) {
+
+        taskSubmitButton.textContent =
+            "Update Task";
+
+    }
+
+
+    if (taskFormContainer) {
+
+        taskFormContainer.style.display =
+            "block";
+
+    }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+// =========================================================
+// DELETE TASK
+// =========================================================
+
+async function deleteTask(taskId) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this task?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/tasks/${taskId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Unable to delete task."
+            );
+
+            return;
+        }
+
+
+        await loadTasks();
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete task error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to Planify server."
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// TOGGLE COMPLETION
+// =========================================================
+
+async function toggleTaskCompletion(
+    taskId,
+    isCompleted
+) {
+
+    const newStatus =
+        isCompleted
+            ? "pending"
+            : "completed";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/tasks/${taskId}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:
+                        JSON.stringify({
+                            status: newStatus
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Unable to update task."
+            );
+
+            return;
+        }
+
+
+        await loadTasks();
+
+
+    } catch (error) {
+
+        console.error(
+            "Toggle completion error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to Planify server."
+        );
+
+    }
+
+}
+
 
 // =========================================================
 // SET FOCUS
@@ -952,29 +1372,31 @@ async function setFocus(taskId) {
                             `Bearer ${token}`
                     },
 
-                    body: JSON.stringify({
-                        isFocus: true
-                    })
+                    body:
+                        JSON.stringify({
+                            isFocus: true
+                        })
                 }
             );
+
 
         const data =
             await response.json();
 
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
-        }
 
         if (!response.ok) {
+
             alert(
                 data.message ||
                 "Unable to set focus."
             );
+
             return;
         }
 
+
         await loadTasks();
+
 
     } catch (error) {
 
@@ -986,8 +1408,11 @@ async function setFocus(taskId) {
         alert(
             "Unable to connect to Planify server."
         );
+
     }
+
 }
+
 
 // =========================================================
 // REMOVE FOCUS
@@ -1011,29 +1436,31 @@ async function removeFocus(taskId) {
                             `Bearer ${token}`
                     },
 
-                    body: JSON.stringify({
-                        isFocus: false
-                    })
+                    body:
+                        JSON.stringify({
+                            isFocus: false
+                        })
                 }
             );
+
 
         const data =
             await response.json();
 
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
-        }
 
         if (!response.ok) {
+
             alert(
                 data.message ||
                 "Unable to remove focus."
             );
+
             return;
         }
 
+
         await loadTasks();
+
 
     } catch (error) {
 
@@ -1045,722 +1472,692 @@ async function removeFocus(taskId) {
         alert(
             "Unable to connect to Planify server."
         );
+
     }
+
 }
 
+
 // =========================================================
-// TOGGLE TASK COMPLETION
+// UPDATE STATISTICS
 // =========================================================
 
-async function toggleTaskCompletion(
-    taskId,
-    isCompleted
-) {
+function updateStatistics() {
 
-    const newStatus =
-        isCompleted
-            ? "completed"
-            : "pending";
+    const total =
+        currentTasks.length;
 
-    try {
 
-        const response =
-            await fetch(
-                `${API_URL}/tasks/${taskId}`,
-                {
-                    method: "PUT",
+    const pending =
+        currentTasks.filter(
+            function (task) {
 
-                    headers: {
-                        "Content-Type":
-                            "application/json",
+                return task.status === "pending";
 
-                        "Authorization":
-                            `Bearer ${token}`
-                    },
+            }
+        ).length;
 
-                    body: JSON.stringify({
-                        status: newStatus
-                    })
-                }
-            );
 
-        const data =
-            await response.json();
+    const progress =
+        currentTasks.filter(
+            function (task) {
 
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
-        }
+                return (
+                    task.status ===
+                    "in-progress"
+                );
 
-        if (!response.ok) {
-            alert(
-                data.message ||
-                "Unable to update task."
-            );
-            return;
-        }
+            }
+        ).length;
 
-        await loadTasks();
 
-    } catch (error) {
+    const completed =
+        currentTasks.filter(
+            function (task) {
 
-        console.error(
-            "Toggle completion error:",
-            error
-        );
+                return task.status === "completed";
 
-        alert(
-            "Unable to connect to Planify server."
-        );
+            }
+        ).length;
+
+
+    if (totalTasksElement) {
+
+        totalTasksElement.textContent =
+            total;
+
     }
+
+
+    if (pendingTasksElement) {
+
+        pendingTasksElement.textContent =
+            pending;
+
+    }
+
+
+    if (progressTasksElement) {
+
+        progressTasksElement.textContent =
+            progress;
+
+    }
+
+
+    if (completedTasksElement) {
+
+        completedTasksElement.textContent =
+            completed;
+
+    }
+
+
+    const percentage =
+        total === 0
+            ? 0
+            : Math.round(
+                (completed / total) * 100
+            );
+
+
+    if (completionPercentageElement) {
+
+        completionPercentageElement.textContent =
+            `${percentage}%`;
+
+    }
+
+
+    updateProductivityStats();
+
 }
 
+
 // =========================================================
-// EDIT TASK
+// PRODUCTIVITY STATISTICS
 // =========================================================
 
-function editTask(taskId) {
+function updateProductivityStats() {
 
-    const task =
+    const completedTasks =
+        currentTasks.filter(
+            function (task) {
+
+                return task.status === "completed";
+
+            }
+        );
+
+
+    const today =
+        new Date();
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const completedToday =
+        completedTasks.filter(
+            function (task) {
+
+                const date =
+                    new Date(
+                        task.updatedAt ||
+                        task.completedAt ||
+                        task.createdAt
+                    );
+
+                date.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+                return (
+                    date.getTime() ===
+                    today.getTime()
+                );
+
+            }
+        ).length;
+
+
+    if (completedTodayElement) {
+
+        completedTodayElement.textContent =
+            completedToday;
+
+    }
+
+
+    const weekStart =
+        new Date(today);
+
+    weekStart.setDate(
+        today.getDate() -
+        today.getDay()
+    );
+
+
+    const completedThisWeek =
+        completedTasks.filter(
+            function (task) {
+
+                const date =
+                    new Date(
+                        task.updatedAt ||
+                        task.completedAt ||
+                        task.createdAt
+                    );
+
+                return date >= weekStart;
+
+            }
+        ).length;
+
+
+    if (completedThisWeekElement) {
+
+        completedThisWeekElement.textContent =
+            completedThisWeek;
+
+    }
+
+
+    const streak =
+        calculateCurrentStreak(
+            completedTasks
+        );
+
+
+    const longest =
+        calculateLongestStreak(
+            completedTasks
+        );
+
+
+    if (currentStreakElement) {
+
+        currentStreakElement.textContent =
+            streak;
+
+    }
+
+
+    if (longestStreakElement) {
+
+        longestStreakElement.textContent =
+            longest;
+
+    }
+
+
+    if (productivityMessageElement) {
+
+        if (completedTasks.length === 0) {
+
+            productivityMessageElement.textContent =
+                "Start completing tasks to build your productivity streak.";
+
+        } else if (streak > 0) {
+
+            productivityMessageElement.textContent =
+                "Great work! Keep your productivity streak going.";
+
+        } else {
+
+            productivityMessageElement.textContent =
+                "You have completed tasks before. Start a new streak today.";
+
+        }
+
+    }
+
+}
+
+
+// =========================================================
+// CURRENT STREAK
+// =========================================================
+
+function calculateCurrentStreak(tasks) {
+
+    if (!tasks.length) {
+        return 0;
+    }
+
+
+    const dates =
+        getCompletedDates(tasks);
+
+
+    let streak = 0;
+
+
+    const today =
+        new Date();
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    let current =
+        new Date(today);
+
+
+    while (
+        dates.has(
+            dateKey(current)
+        )
+    ) {
+
+        streak++;
+
+        current.setDate(
+            current.getDate() - 1
+        );
+
+    }
+
+
+    return streak;
+
+}
+
+
+// =========================================================
+// LONGEST STREAK
+// =========================================================
+
+function calculateLongestStreak(tasks) {
+
+    const dates =
+        Array.from(
+            getCompletedDates(tasks)
+        ).sort();
+
+
+    if (!dates.length) {
+        return 0;
+    }
+
+
+    let longest = 1;
+
+    let current = 1;
+
+
+    for (
+        let i = 1;
+        i < dates.length;
+        i++
+    ) {
+
+        const previous =
+            new Date(
+                dates[i - 1]
+            );
+
+        const currentDateValue =
+            new Date(
+                dates[i]
+            );
+
+
+        const difference =
+            (
+                currentDateValue -
+                previous
+            ) /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            );
+
+
+        if (difference === 1) {
+
+            current++;
+
+            longest =
+                Math.max(
+                    longest,
+                    current
+                );
+
+        } else {
+
+            current = 1;
+
+        }
+
+    }
+
+
+    return longest;
+
+}
+
+
+// =========================================================
+// COMPLETED DATES
+// =========================================================
+
+function getCompletedDates(tasks) {
+
+    const dates =
+        new Set();
+
+
+    tasks.forEach(
+        function (task) {
+
+            const date =
+                new Date(
+                    task.updatedAt ||
+                    task.completedAt ||
+                    task.createdAt
+                );
+
+
+            dates.add(
+                dateKey(date)
+            );
+
+        }
+    );
+
+
+    return dates;
+
+}
+
+
+// =========================================================
+// DATE KEY
+// =========================================================
+
+function dateKey(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+// =========================================================
+// FOCUS TASK
+// =========================================================
+
+function updateFocusTask() {
+
+    if (!focusTaskContainer) {
+        return;
+    }
+
+
+    const focusTask =
         currentTasks.find(
-            item => item._id === taskId
+            function (task) {
+
+                return task.isFocus === true;
+
+            }
         );
 
-    if (!task) {
+
+    if (!focusTask) {
+
+        focusTaskContainer.innerHTML = `
+
+            <div class="focus-empty">
+
+                <div class="focus-empty-icon">
+                    ⭐
+                </div>
+
+                <div>
+
+                    <h3>
+                        No focus task yet
+                    </h3>
+
+                    <p>
+                        Choose one task as your focus for today.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
         return;
     }
 
-    editingTaskId = taskId;
 
-    taskTitle.value =
-        task.title || "";
+    focusTaskContainer.innerHTML = `
 
-    taskDescription.value =
-        task.description || "";
+        <div class="focus-task">
 
-    taskStatus.value =
-        task.status || "pending";
+            <h3>
+                ${escapeHtml(
+                    focusTask.title || ""
+                )}
+            </h3>
 
-    taskPriority.value =
-        task.priority || "medium";
+            <p>
+                ${escapeHtml(
+                    focusTask.description || ""
+                )}
+            </p>
 
-    taskEnergy.value =
-        task.energyLevel || "medium";
+            <button
+                type="button"
+                onclick="removeFocus(
+                    '${focusTask._id}'
+                )"
+            >
+                Remove Focus
+            </button>
 
-    if (task.reminder) {
+        </div>
 
-        const reminderDate =
-            new Date(task.reminder);
+    `;
 
-        if (!isNaN(reminderDate.getTime())) {
-
-            const year =
-                reminderDate.getFullYear();
-
-            const month =
-                String(
-                    reminderDate.getMonth() + 1
-                ).padStart(2, "0");
-
-            const day =
-                String(
-                    reminderDate.getDate()
-                ).padStart(2, "0");
-
-            const hours =
-                String(
-                    reminderDate.getHours()
-                ).padStart(2, "0");
-
-            const minutes =
-                String(
-                    reminderDate.getMinutes()
-                ).padStart(2, "0");
-
-            taskReminder.value =
-                `${year}-${month}-${day}T${hours}:${minutes}`;
-
-        }
-
-    } else {
-
-        taskReminder.value = "";
-
-    }
-
-    taskSubmitButton.textContent =
-        "Update Task";
-
-    taskFormContainer.style.display =
-        "block";
-
-    taskFormContainer.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
 }
 
-// =========================================================
-// DELETE TASK
-// =========================================================
-
-async function deleteTask(taskId) {
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete this task?"
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_URL}/tasks/${taskId}`,
-                {
-                    method: "DELETE",
-
-                    headers: {
-                        "Authorization":
-                            `Bearer ${token}`
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if (response.status === 401) {
-            handleUnauthorized();
-            return;
-        }
-
-        if (!response.ok) {
-            alert(
-                data.message ||
-                "Unable to delete task."
-            );
-            return;
-        }
-
-        await loadTasks();
-
-    } catch (error) {
-
-        console.error(
-            "Delete task error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to Planify server."
-        );
-    }
-}
 
 // =========================================================
-// ENERGY
+// REMINDERS
 // =========================================================
 
-function formatEnergy(energy) {
-
-    if (energy === "low") {
-        return "Low Energy";
-    }
-
-    if (energy === "high") {
-        return "High Energy";
-    }
-
-    return "Medium Energy";
-}
-
-// =========================================================
-// ENERGY ICON
-// =========================================================
-
-function getEnergyIcon(energy) {
-
-    if (energy === "low") {
-        return "🟢";
-    }
-
-    if (energy === "high") {
-        return "🔴";
-    }
-
-    return "🟡";
-}
-
-// =========================================================
-// BROWSER NOTIFICATION PERMISSION
-// =========================================================
-
-async function requestNotificationPermission() {
-
-    if (!("Notification" in window)) {
-
-        console.log(
-            "Browser notifications are not supported."
-        );
-
-        return false;
-    }
-
-    if (Notification.permission === "granted") {
-        return true;
-    }
-
-    if (Notification.permission === "denied") {
-
-        alert(
-            "Planify notifications are blocked. " +
-            "Please allow notifications for this site " +
-            "in Chrome settings."
-        );
-
-        return false;
-    }
-
-    try {
-
-        const permission =
-            await Notification.requestPermission();
-
-        if (permission === "granted") {
-
-            console.log(
-                "Planify notifications enabled."
-            );
-
-            return true;
-        }
-
-        return false;
-
-    } catch (error) {
-
-        console.error(
-            "Notification permission error:",
-            error
-        );
-
-        return false;
-    }
-}
-
-// =========================================================
-// CLEAR REMINDER TIMERS
-// =========================================================
-
-function clearReminderTimers() {
+function setupReminders() {
 
     reminderTimers.forEach(
-        timer => {
+        function (timer) {
+
             clearTimeout(timer);
+
         }
     );
+
 
     reminderTimers.clear();
-}
 
-// =========================================================
-// SCHEDULE ALL REMINDERS
-// =========================================================
-
-function scheduleAllReminders() {
-
-    clearReminderTimers();
 
     currentTasks.forEach(
-        task => {
-            scheduleReminder(task);
-        }
-    );
-}
+        function (task) {
 
-// =========================================================
-// SCHEDULE SINGLE REMINDER
-// =========================================================
-
-function scheduleReminder(task) {
-
-    if (!task.reminder) {
-        return;
-    }
-
-    if (task.status === "completed") {
-        return;
-    }
-
-    const reminderTime =
-        new Date(task.reminder);
-
-    if (isNaN(reminderTime.getTime())) {
-        return;
-    }
-
-    const notificationKey =
-        getReminderKey(task);
-
-    /*
-     * Prevent the same reminder from
-     * appearing multiple times.
-     */
-
-    if (
-        localStorage.getItem(
-            notificationKey
-        )
-    ) {
-        return;
-    }
-
-    const delay =
-        reminderTime.getTime() -
-        Date.now();
-
-    /*
-     * If reminder time has already passed,
-     * trigger it immediately.
-     */
-
-    if (delay <= 0) {
-
-        triggerReminder(
-            task,
-            notificationKey
-        );
-
-        return;
-    }
-
-    /*
-     * JavaScript setTimeout has a maximum
-     * delay of 2147483647 milliseconds.
-     */
-
-    const MAX_DELAY =
-        2147483647;
-
-    const timerDelay =
-        Math.min(
-            delay,
-            MAX_DELAY
-        );
-
-    const timer =
-        setTimeout(
-            () => {
-
-                if (
-                    reminderTime.getTime() <=
-                    Date.now()
-                ) {
-
-                    triggerReminder(
-                        task,
-                        notificationKey
-                    );
-
-                } else {
-
-                    /*
-                     * Reminder is more than
-                     * the maximum timeout away.
-                     * Schedule it again.
-                     */
-
-                    scheduleReminder(task);
-                }
-
-            },
-            timerDelay
-        );
-
-    reminderTimers.set(
-        notificationKey,
-        timer
-    );
-}
-
-// =========================================================
-// TRIGGER REMINDER
-// =========================================================
-
-function triggerReminder(
-    task,
-    notificationKey
-) {
-
-    if (task.status === "completed") {
-        return;
-    }
-
-    if (
-        localStorage.getItem(
-            notificationKey
-        )
-    ) {
-        return;
-    }
-
-    if (!("Notification" in window)) {
-
-        console.log(
-            "Browser notifications are not supported."
-        );
-
-        return;
-    }
-
-    if (
-        Notification.permission !==
-        "granted"
-    ) {
-
-        console.log(
-            "Planify notification permission " +
-            "has not been granted."
-        );
-
-        return;
-    }
-
-    try {
-
-        const notification =
-            new Notification(
-                "🔔 Planify Reminder",
-                {
-                    body:
-                        `It's time to work on: ${task.title}`,
-
-                    icon:
-                        "images/logo.png",
-
-                    tag:
-                        `planify-reminder-${task._id}`,
-
-                    requireInteraction:
-                        true
-                }
-            );
-
-        notification.onclick =
-            () => {
-
-                window.focus();
-
-                const taskCard =
-                    document.querySelector(
-                        `[data-task-id="${task._id}"]`
-                    );
-
-                if (taskCard) {
-
-                    taskCard.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center"
-                    });
-
-                }
-
-                notification.close();
-            };
-
-        localStorage.setItem(
-            notificationKey,
-            "true"
-        );
-
-        reminderTimers.delete(
-            notificationKey
-        );
-
-        console.log(
-            `Reminder notification shown for: ${task.title}`
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Unable to show Planify notification:",
-            error
-        );
-    }
-}
-
-// =========================================================
-// REMINDER SAFETY CHECK
-// =========================================================
-
-function checkReminders() {
-
-    if (
-        !currentTasks ||
-        currentTasks.length === 0
-    ) {
-        return;
-    }
-
-    currentTasks.forEach(
-        task => {
-
-            if (
-                !task.reminder ||
-                task.status === "completed"
-            ) {
+            if (!task.reminder) {
                 return;
             }
+
+
+            if (task.status === "completed") {
+                return;
+            }
+
 
             const reminderTime =
-                new Date(task.reminder);
+                new Date(
+                    task.reminder
+                ).getTime();
 
-            if (
-                isNaN(
-                    reminderTime.getTime()
-                )
-            ) {
+
+            const delay =
+                reminderTime -
+                Date.now();
+
+
+            if (delay <= 0) {
                 return;
             }
 
-            if (
-                reminderTime.getTime() <=
-                Date.now()
-            ) {
 
-                const notificationKey =
-                    getReminderKey(task);
+            const timer =
+                setTimeout(
+                    function () {
 
-                if (
-                    !localStorage.getItem(
-                        notificationKey
+                        showReminder(
+                            task
+                        );
+
+                    },
+                    Math.min(
+                        delay,
+                        2147483647
                     )
-                ) {
+                );
 
-                    triggerReminder(
-                        task,
-                        notificationKey
-                    );
-                }
-            }
+
+            reminderTimers.set(
+                task._id,
+                timer
+            );
+
         }
     );
+
 }
 
+
 // =========================================================
-// REMINDER KEY
+// SHOW REMINDER
 // =========================================================
 
-function getReminderKey(task) {
+function showReminder(task) {
 
-    return (
-        `planify-reminder-${task._id}-` +
-        `${new Date(task.reminder).getTime()}`
+    alert(
+        `⏰ Reminder\n\n${task.title}`
     );
-}
 
-// =========================================================
-// FORMAT REMINDER
-// =========================================================
-
-function formatReminder(dateString) {
-
-    const date =
-        new Date(dateString);
 
     if (
-        isNaN(
+        "Notification" in window &&
+        Notification.permission === "granted"
+    ) {
+
+        new Notification(
+            "Planify Reminder",
+            {
+                body:
+                    task.title
+            }
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// REQUEST NOTIFICATION PERMISSION
+// =========================================================
+
+if (
+    "Notification" in window &&
+    Notification.permission === "default"
+) {
+
+    Notification.requestPermission()
+        .catch(
+            function (error) {
+
+                console.error(
+                    error
+                );
+
+            }
+        );
+
+}
+
+
+// =========================================================
+// FORMAT DATE / TIME
+// =========================================================
+
+function formatDateTime(value) {
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
             date.getTime()
         )
     ) {
-        return "Invalid reminder";
+
+        return "";
+
     }
+
 
     return date.toLocaleString(
         "en-IN",
         {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit"
+            dateStyle: "medium",
+            timeStyle: "short"
         }
     );
+
 }
 
-// =========================================================
-// FORMAT DATE
-// =========================================================
-
-function formatDate(dateString) {
-
-    const date =
-        new Date(dateString);
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-        return "";
-    }
-
-    return date.toLocaleDateString(
-        "en-IN",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        }
-    );
-}
-
-// =========================================================
-// FORMAT STATUS
-// =========================================================
-
-function formatStatus(status) {
-
-    if (status === "in-progress") {
-        return "In Progress";
-    }
-
-    if (status === "completed") {
-        return "Completed";
-    }
-
-    return "Pending";
-}
-
-// =========================================================
-// FORMAT PRIORITY
-// =========================================================
-
-function formatPriority(priority) {
-
-    if (priority === "high") {
-        return "High";
-    }
-
-    if (priority === "low") {
-        return "Low";
-    }
-
-    return "Medium";
-}
 
 // =========================================================
 // ESCAPE HTML
 // =========================================================
 
-function escapeHTML(value) {
+function escapeHtml(value) {
 
-    return String(value || "")
+    return String(value)
         .replace(
             /&/g,
             "&amp;"
@@ -1781,43 +2178,36 @@ function escapeHTML(value) {
             /'/g,
             "&#039;"
         );
+
 }
 
-// =========================================================
-// HANDLE UNAUTHORIZED
-// =========================================================
-
-function handleUnauthorized() {
-
-    clearReminderTimers();
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    alert(
-        "Your session has expired. Please login again."
-    );
-
-    window.location.href =
-        "index.html";
-}
 
 // =========================================================
-// START DASHBOARD
+// INITIAL LOAD
 // =========================================================
 
-if (taskList) {
+if (taskList && token) {
 
     loadTasks();
 
-    /*
-     * Safety check every 10 seconds.
-     * This helps trigger reminders if the
-     * browser timer was delayed.
-     */
-
-    setInterval(
-        checkReminders,
-        10000
-    );
 }
+
+
+// =========================================================
+// MAKE FUNCTIONS AVAILABLE TO HTML
+// =========================================================
+
+window.editTask =
+    editTask;
+
+window.deleteTask =
+    deleteTask;
+
+window.toggleTaskCompletion =
+    toggleTaskCompletion;
+
+window.setFocus =
+    setFocus;
+
+window.removeFocus =
+    removeFocus;
