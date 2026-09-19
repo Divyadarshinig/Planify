@@ -11,41 +11,34 @@ require("dotenv").config();
 // DATABASE
 // =========================================================
 
-const connectDB =
-    require("./config/db");
+const connectDB = require("./config/db");
 
 
 // =========================================================
 // ROUTES
 // =========================================================
 
-const authRoutes =
-    require("./routes/authRoutes");
-
-const taskRoutes =
-    require("./routes/taskRoutes");
-
-const productivityRoutes =
-    require("./routes/productivityRoutes");
+const authRoutes = require("./routes/authRoutes");
+const taskRoutes = require("./routes/taskRoutes");
+const productivityRoutes = require("./routes/productivityRoutes");
 
 
 // =========================================================
 // CREATE EXPRESS APP
 // =========================================================
 
-const app =
-    express();
+const app = express();
 
 
 // =========================================================
 // MIDDLEWARE
 // =========================================================
 
+// Allow requests from the frontend
 app.use(cors());
 
-app.use(
-    express.json()
-);
+// Parse JSON request bodies
+app.use(express.json());
 
 
 // =========================================================
@@ -60,24 +53,13 @@ connectDB();
 // =========================================================
 
 // Authentication
-app.use(
-    "/api/auth",
-    authRoutes
-);
-
+app.use("/api/auth", authRoutes);
 
 // Tasks
-app.use(
-    "/api/tasks",
-    taskRoutes
-);
-
+app.use("/api/tasks", taskRoutes);
 
 // Productivity Analysis + Streak
-app.use(
-    "/api/productivity",
-    productivityRoutes
-);
+app.use("/api/productivity", productivityRoutes);
 
 
 // =========================================================
@@ -85,14 +67,9 @@ app.use(
 // =========================================================
 
 app.get("/", (req, res) => {
-
     res.json({
-
-        message:
-            "Welcome to Planify API 🚀"
-
+        message: "Welcome to Planify API 🚀"
     });
-
 });
 
 
@@ -100,17 +77,9 @@ app.get("/", (req, res) => {
 // SERVER
 // =========================================================
 
-const PORT =
-    process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
-
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            `Planify server running on http://localhost:${PORT}`
-        );
-
-    }
-);
+// Listen on all network interfaces
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Planify server running on port ${PORT}`);
+});
